@@ -1,8 +1,8 @@
 import {useRef,useEffect} from 'react'
-import './App.css'
+import './styles.css'
 import * as faceapi from 'face-api.js'
 
-function App(){
+function FaceDetection(){
   const videoRef = useRef()
   const canvasRef = useRef()
 
@@ -67,7 +67,7 @@ function App(){
 
   return (
     <div className="myapp">
-    <h1>FAce Detection</h1>
+    <h1>Face Detection</h1>
       <div className="appvide">
         
       <video crossOrigin="anonymous" ref={videoRef} autoPlay></video>
@@ -79,4 +79,4 @@ function App(){
 
 }
 
-export default App;
+export default FaceDetection;
