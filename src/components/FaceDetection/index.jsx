@@ -1,5 +1,5 @@
 import {useRef,useEffect} from 'react'
-import './styles.css'
+import './styles.sass'
 import * as faceapi from 'face-api.js'
 
 function FaceDetection(){
@@ -52,7 +52,7 @@ function FaceDetection(){
       })
 
       const resized = faceapi.resizeResults(detections,{
-         width:940,
+        width:940,
         height:650
       })
 
