@@ -10,7 +10,6 @@ function FaceDetection(){
   useEffect(()=>{
     startVideo()
     videoRef && loadModels()
-
   },[])
 
 
