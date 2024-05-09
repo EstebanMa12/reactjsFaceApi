@@ -69,7 +69,6 @@ function FaceDetection(){
     <div className="myapp">
     <h1>Face Detection</h1>
       <div className="appvide">
-        
       <video crossOrigin="anonymous" ref={videoRef} autoPlay></video>
       </div>
       <canvas ref={canvasRef} width="940" height="650"
