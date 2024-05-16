@@ -5,8 +5,8 @@ const AppRouter = () => {
     return (
         <Router>
         <Routes>
-            <Route path="/" element={<FaceDetection />} />
-            <Route path="/register" element={<Register />} />
+            <Route path="/login" element={<FaceDetection />} />
+            <Route path="/" element={<Register />} />
         </Routes>
         </Router>
     );

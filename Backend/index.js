@@ -1,10 +1,9 @@
-const {json, urlencoded} = require('express');
+const { json, urlencoded } = require('express');
 const express = require('express')
 const cors = require('cors')
-const mongoDB = require( './config/mongoConfig' );
-const { default: mongoose } = require('mongoose');
+const mongoDB = require('./config/mongoConfig');
+const Descriptor = require('./models/descriptor.model');
 
-const {upload} = require('./utils/upload');
 
 if (process.env.NODE_ENV !== "production") {
     require("dotenv").config();
@@ -15,16 +14,6 @@ const port = 3000
 const app = express();
 app.use(cors());
 mongoDB.connect();
-
-let bucket;
-(()=>{
-    mongoose.connection.on("connected", ()=>{
-        bucket = new mongoose.mongo.GridFSBucket(mongoose.connection.db, {
-            bucketName: "uploads"
-        });
-    })
-})
-
 
 
 app.set('port', port);
@@ -37,26 +26,21 @@ app.use(json());
 
 app.use(urlencoded({ extended: false }));
 
-app.post("/upload/file", upload().single("file"), async (req, res) => {
-    try {
-        const file = req.file;
-        console.log(file)
-        res.status(200).json({ message: "File uploaded successfully" });
-    } catch (error) {
-        res.status(500).json({ message: "File upload failed" });
-    }
-})
+
+
+// POST
+app.post('/register', async (req, res) => {
+    const { descriptors, name } = req.body;
+    const descriptor = new Descriptor({ descriptors, name });
+    await descriptor.save();
+    res.json({
+        message: 'Descriptor saved',
+        data: descriptor
+    });
+});
 
 // GET
-
-app.get("/files", async (req, res) => {
-    try {
-        let files = [];
-        await bucket.find().forEach((file) => {
-            files.push(file);
-        });
-        res.status(200).json({ files });
-    } catch (error) {
-        res.status(500).json({ message: "Error fetching files" });
-    }
-})
+app.get('/descriptors', async (req, res) => {
+    const descriptors = await Descriptor.find();
+    res.json(descriptors);
+});
