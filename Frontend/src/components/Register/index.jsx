@@ -10,14 +10,26 @@ const Register = () => {
   const image = useRef(null);
   const navigate = useNavigate();
 
+  useEffect(()=>{
+    const loadModels = async () => {
+      await Promise.all([
+        faceapi.nets.tinyFaceDetector.loadFromUri("/models"),
+        faceapi.nets.faceLandmark68Net.loadFromUri("/models"),
+        faceapi.nets.faceRecognitionNet.loadFromUri("/models"),
+        faceapi.nets.faceExpressionNet.loadFromUri("/models"),
+      ]);
+    }
+    loadModels();
+  },[])
+
   const handleImageChange = async (event) => {
     // Carga los modelos necesarios para el procesamiento de imágenes
-    await Promise.all([
-      faceapi.nets.tinyFaceDetector.loadFromUri("/models"),
-      faceapi.nets.faceLandmark68Net.loadFromUri("/models"),
-      faceapi.nets.faceRecognitionNet.loadFromUri("/models"),
-      faceapi.nets.faceExpressionNet.loadFromUri("/models"),
-    ]);
+    // await Promise.all([
+    //   faceapi.nets.tinyFaceDetector.loadFromUri("/models"),
+    //   faceapi.nets.faceLandmark68Net.loadFromUri("/models"),
+    //   faceapi.nets.faceRecognitionNet.loadFromUri("/models"),
+    //   faceapi.nets.faceExpressionNet.loadFromUri("/models"),
+    // ]);
 
     // Continúa con el procesamiento de la imagen solo después de que todos los modelos estén cargados
     const img = event.target.files[0];
@@ -37,12 +49,12 @@ const Register = () => {
         if (detections && detections.length>0) {
           console.log("Detected face descriptor");
             
-          const descriptorsArray = detections.map(detection => detection.descriptor);  
+          const descriptorsArray = detections.map(detection => detection.descriptor) ;  
 
           const response = await axios.post(
             `${import.meta.env.VITE_API_URL}/register`,
             {
-              descriptors: descriptorsArray,
+              descriptor: descriptorsArray,
               name: "Test",
             }
           );
