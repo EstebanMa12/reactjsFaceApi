@@ -20,7 +20,6 @@ function FaceDetection() {
       const response = await axios.get(
         `${import.meta.env.VITE_API_URL}/descriptors`
       );
-      // console.log(response)
       const labeledDescriptors = response.data.map((person) => {
         const descriptorValues = Object.values(person.descriptor[0]);
         const descriptorsAsFloat32Arrays = new Float32Array(
@@ -30,10 +29,9 @@ function FaceDetection() {
           descriptorsAsFloat32Arrays[i] = value;
         });
 
-        return new faceapi.LabeledFaceDescriptors(
-          person.name,
-          [descriptorsAsFloat32Arrays]
-        );
+        return new faceapi.LabeledFaceDescriptors(person.name, [
+          descriptorsAsFloat32Arrays,
+        ]);
       });
       setPersons(labeledDescriptors);
     } catch (error) {
@@ -86,18 +84,16 @@ function FaceDetection() {
         height: 650,
       });
 
-      
-      // faceapi.draw.drawDetections(canvasRef.current, resized);
-      faceapi.draw.DrawFaceLandmarks(canvasRef.current, resized);
-
-      
-      if (persons.length>0 && (resized.length > 0 && typeof resized !== 'undefined')  ) {
-
-  
+      faceapi.draw.drawFaceLandmarks(canvasRef.current, resized);
+      if (
+        persons.length > 0 &&
+        resized.length > 0 &&
+        typeof resized !== "undefined"
+      ) {
         const faceMatcher = new faceapi.FaceMatcher(persons, 0.6);
-
-        const results = resized.map(fd => faceMatcher.findBestMatch(fd.descriptor))
-
+        const results = resized.map((fd) =>
+          faceMatcher.findBestMatch(fd.descriptor)
+        );
         results.forEach((bestMatch, i) => {
           const box = resized[i].detection.box;
           const text = bestMatch.toString();
@@ -105,7 +101,7 @@ function FaceDetection() {
             label: text,
           });
           drawBox.draw(canvasRef.current);
-        })
+        });
       }
     }, 2000);
   };
