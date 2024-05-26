@@ -30,9 +30,10 @@ function FaceDetection() {
           descriptorsAsFloat32Arrays[i] = value;
         });
 
-        return new faceapi.LabeledFaceDescriptors(person.name, [
-          descriptorsAsFloat32Arrays,
-        ]);
+        return new faceapi.LabeledFaceDescriptors(
+          person.name,
+          [descriptorsAsFloat32Arrays]
+        );
       });
       setPersons(labeledDescriptors);
     } catch (error) {
@@ -52,19 +53,22 @@ function FaceDetection() {
   };
   // LOAD MODELS FROM FACE API
 
-  const loadModels = async () => {
+  const loadModels = () => {
     Promise.all([
       // THIS FOR FACE DETECT AND LOAD FROM YOU PUBLIC/MODELS DIRECTORY
       faceapi.nets.tinyFaceDetector.loadFromUri("/models"),
       faceapi.nets.faceLandmark68Net.loadFromUri("/models"),
       faceapi.nets.faceRecognitionNet.loadFromUri("/models"),
       faceapi.nets.faceExpressionNet.loadFromUri("/models"),
-    ]);
-    faceMyDetect();
+    ]).then(() => {
+      faceMyDetect();
+    });
   };
 
   const faceMyDetect = () => {
-    setInterval(async () => {
+    const intervalId = setInterval(async () => {
+      
+
       const detections = await faceapi
         .detectAllFaces(videoRef.current, new faceapi.TinyFaceDetectorOptions())
         .withFaceLandmarks()
@@ -84,33 +88,28 @@ function FaceDetection() {
         height: 650,
       });
 
-      faceapi.draw.drawDetections(canvasRef.current, resized);
-      // faceapi.draw.drawFaceLandmarks(canvasRef.current, resized);
+      
+      // faceapi.draw.drawDetections(canvasRef.current, resized);
+      faceapi.draw.DrawFaceLandmarks(canvasRef.current, resized);
 
-      if (
-        persons.length > 0 &&
-        resized.length > 0 &&
-        typeof resized !== "undefined"
-      ) {
+      
+      if (persons.length>0 && (resized.length > 0 && typeof resized !== 'undefined')  ) {
+
+  
         const faceMatcher = new faceapi.FaceMatcher(persons, 0.6);
 
-        const results = resized.map((fd) =>
-          faceMatcher.findBestMatch(fd.descriptor)
-        );
-
-        // console.log(results)
+        const results = resized.map(fd => faceMatcher.findBestMatch(fd.descriptor))
 
         results.forEach((bestMatch, i) => {
-          // console.log(bestMatch, i )
           const box = resized[i].detection.box;
           const text = bestMatch.toString();
-          // console.log(text)
           const drawBox = new faceapi.draw.DrawBox(box, {
             label: text,
           });
           drawBox.draw(canvasRef.current);
-        });
+        })
       }
+
     }, 2000);
     return () => clearInterval(intervalId)
   };
