@@ -41,15 +41,15 @@ const Register = () => {
 
       image.onload = async () => {
         // Detecta rostros en la imagen y obtiene sus descripciones
-        const detections = await faceapi
-          .detectAllFaces(image, new faceapi.TinyFaceDetectorOptions())
+        const detection = await faceapi
+          .detectSingleFace(image, new faceapi.TinyFaceDetectorOptions())
           .withFaceLandmarks()
-          .withFaceDescriptors();
+          .withFaceDescriptor();
 
-        if (detections && detections.length>0) {
+        if (detection) {
           console.log("Detected face descriptor");
-            
-          const descriptorsArray = detections.map(detection => detection.descriptor) ;  
+
+          const descriptorsArray = detection.descriptor;
 
           const response = await axios.post(
             `${import.meta.env.VITE_API_URL}/register`,
@@ -58,7 +58,7 @@ const Register = () => {
               name: "Test",
             }
           );
-            console.log(response.data);
+            // console.log(response.data);
             navigate("/login");
         }else{
             console.log("No face detected");

@@ -19,13 +19,20 @@ function FaceDetection() {
     try {
       const response = await axios.get(
         `${import.meta.env.VITE_API_URL}/descriptors`
-      );      const labeledDescriptors = response.data.map((person) => {
-        const descriptorsAsFloat32Arrays = person.descriptors.map(
-          (descriptor) => new Float32Array(descriptor)
+      );
+      // console.log(response)
+      const labeledDescriptors = response.data.map((person) => {
+        const descriptorValues = Object.values(person.descriptor[0]);
+        const descriptorsAsFloat32Arrays = new Float32Array(
+          descriptorValues.length
         );
+        descriptorValues.forEach((value, i) => {
+          descriptorsAsFloat32Arrays[i] = value;
+        });
+
         return new faceapi.LabeledFaceDescriptors(
           person.name,
-          descriptorsAsFloat32Arrays
+          [descriptorsAsFloat32Arrays]
         );
       });
       setPersons(labeledDescriptors);
@@ -33,7 +40,6 @@ function FaceDetection() {
       console.error(error);
     }
   };
-
   // OPEN YOU FACE WEBCAM
   const startVideo = () => {
     navigator.mediaDevices
@@ -61,6 +67,7 @@ function FaceDetection() {
 
   const faceMyDetect = () => {
     setInterval(async () => {
+
       const detections = await faceapi
         .detectAllFaces(videoRef.current, new faceapi.TinyFaceDetectorOptions())
         .withFaceLandmarks()
@@ -83,8 +90,17 @@ function FaceDetection() {
       faceapi.draw.drawDetections(canvasRef.current, resized);
       faceapi.draw.drawFaceLandmarks(canvasRef.current, resized);
 
-      if(persons){
+      if (persons && detections) {
         const faceMatcher = new faceapi.FaceMatcher(persons, 0.6);
+        resized.forEach((detection) => {  
+          const bestMatch = faceMatcher.findBestMatch(detection.descriptor);
+          const text = bestMatch.toString();
+          const box = detection.detection.box;
+          const drawBox = new faceapi.draw.DrawBox(box, {
+            label: text,
+          });
+          drawBox.draw(canvasRef.current);
+        })
       }
 
     }, 1000);

@@ -1,9 +1,10 @@
 const mongoose = require('mongoose');
 
 const ValueSchema = new mongoose.Schema({
-    descriptors: {
+    descriptor: {
         type: Array,
-        required: true
+        required: true,
+        
     },
     name: {
         type: String,

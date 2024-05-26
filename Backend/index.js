@@ -30,12 +30,12 @@ app.use(urlencoded({ extended: false }));
 
 // POST
 app.post('/register', async (req, res) => {
-    const { descriptors, name } = req.body;
-    const descriptor = new Descriptor({ descriptors, name });
-    await descriptor.save();
+    const { descriptor, name } = req.body;
+    const descriptorDB = new Descriptor({ descriptor, name });
+    await descriptorDB.save();
     res.json({
         message: 'Descriptor saved',
-        data: descriptor
+        data: descriptorDB
     });
 });
 
