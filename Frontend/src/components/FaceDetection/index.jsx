@@ -66,9 +66,7 @@ function FaceDetection() {
   };
 
   const faceMyDetect = () => {
-    const intervalId = setInterval(async () => {
-      
-
+    setInterval(async () => {
       const detections = await faceapi
         .detectAllFaces(videoRef.current, new faceapi.TinyFaceDetectorOptions())
         .withFaceLandmarks()
@@ -109,9 +107,7 @@ function FaceDetection() {
           drawBox.draw(canvasRef.current);
         })
       }
-
     }, 2000);
-    return () => clearInterval(intervalId)
   };
 
   return (
