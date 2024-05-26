@@ -87,20 +87,27 @@ function FaceDetection() {
         height: 650,
       });
 
+      
       faceapi.draw.drawDetections(canvasRef.current, resized);
-      faceapi.draw.drawFaceLandmarks(canvasRef.current, resized);
-
-      if (persons && detections) {
+      // faceapi.draw.drawFaceLandmarks(canvasRef.current, resized);
+      
+      if (persons.length>0 && (resized.length > 0 && typeof resized !== 'undefined')  ) {
+        console.log("Resized length", resized.length);
+        console.log("Persons", persons)
         const faceMatcher = new faceapi.FaceMatcher(persons, 0.6);
-        resized.forEach((detection) => {  
-          const bestMatch = faceMatcher.findBestMatch(detection.descriptor);
-          const text = bestMatch.toString();
-          const box = detection.detection.box;
-          const drawBox = new faceapi.draw.DrawBox(box, {
-            label: text,
-          });
-          drawBox.draw(canvasRef.current);
-        })
+
+        const results = resized.map(fd => faceMatcher.findBestMatch(fd.descriptor))
+
+        console.log(results)
+        // resized.forEach((detection) => {  
+        //   const bestMatch = faceMatcher.findBestMatch(detection.descriptor);
+        //   const text = bestMatch.toString();
+        //   const box = detection.detection.box;
+        //   const drawBox = new faceapi.draw.DrawBox(box, {
+        //     label: text,
+        //   });
+        //   drawBox.draw(canvasRef.current);
+        // })
       }
 
     }, 1000);

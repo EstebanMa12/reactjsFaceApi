@@ -10,7 +10,7 @@ const Register = () => {
   const image = useRef(null);
   const navigate = useNavigate();
 
-  useEffect(()=>{
+  useEffect(() => {
     const loadModels = async () => {
       await Promise.all([
         faceapi.nets.tinyFaceDetector.loadFromUri("/models"),
@@ -18,9 +18,9 @@ const Register = () => {
         faceapi.nets.faceRecognitionNet.loadFromUri("/models"),
         faceapi.nets.faceExpressionNet.loadFromUri("/models"),
       ]);
-    }
+    };
     loadModels();
-  },[])
+  }, []);
 
   const handleImageChange = async (event) => {
     // Carga los modelos necesarios para el procesamiento de imágenes
@@ -58,10 +58,10 @@ const Register = () => {
               name: "Test",
             }
           );
-            // console.log(response.data);
-            navigate("/login");
-        }else{
-            console.log("No face detected");
+          // console.log(response.data);
+          navigate("/login");
+        } else {
+          console.log("No face detected");
         }
       };
     };
