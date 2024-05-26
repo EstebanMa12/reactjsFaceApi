@@ -99,15 +99,15 @@ function FaceDetection() {
         const results = resized.map(fd => faceMatcher.findBestMatch(fd.descriptor))
 
         console.log(results)
-        // resized.forEach((detection) => {  
-        //   const bestMatch = faceMatcher.findBestMatch(detection.descriptor);
-        //   const text = bestMatch.toString();
-        //   const box = detection.detection.box;
-        //   const drawBox = new faceapi.draw.DrawBox(box, {
-        //     label: text,
-        //   });
-        //   drawBox.draw(canvasRef.current);
-        // })
+
+        results.forEach((bestMatch, i) => {
+          const box = resized[i].detection.box;
+          const text = bestMatch.toString();
+          const drawBox = new faceapi.draw.DrawBox(box, {
+            label: text,
+          });
+          drawBox.draw(canvasRef.current);
+        })
       }
 
     }, 1000);
