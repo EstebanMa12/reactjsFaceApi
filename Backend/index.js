@@ -1,4 +1,4 @@
-require('@tensorflow/tfjs-node')
+// const tf = require('@tensorflow/tfjs-node')
 const { json, urlencoded } = require('express');
 const express = require('express')
 const cors = require('cors')
@@ -8,6 +8,7 @@ const faceapi = require("face-api.js");
 const fileUpload = require("express-fileupload");
 const { Canvas, Image } = require("canvas");
 const canvas = require("canvas");
+faceapi.env.monkeyPatch({ Canvas, Image });
 
 if (process.env.NODE_ENV !== "production") {
     require("dotenv").config();
@@ -39,6 +40,7 @@ const loadModels = async () => {
     await faceapi.nets.faceLandmark68Net.loadFromDisk(__dirname + "/models");
     await faceapi.nets.faceRecognitionNet.loadFromDisk(__dirname + "/models");
     await faceapi.nets.faceExpressionNet.loadFromDisk(__dirname + "/models");
+    await faceapi.nets.ssdMobilenetv1.loadFromDisk(__dirname +'/models')
 }
 
 loadModels();
@@ -57,7 +59,7 @@ const getDescriptorsAndReturnBestMatch = async (image) => {
 
     const faceMatcher = new faceapi.FaceMatcher(labeledDescriptors, 0.6);
     const img = await canvas.loadImage(image);
-    
+
     let temp = faceapi.createCanvasFromMedia(img);
 
     const displaySize = { width: img.width, height: img.height };
@@ -71,6 +73,14 @@ const getDescriptorsAndReturnBestMatch = async (image) => {
     return results;
 
 }
+
+// GET Best Match 
+app.post('/detect', async (req, res) => {
+    const image = req.files.image.tempFilePath
+    console.log(image);
+    const bestMatch = await getDescriptorsAndReturnBestMatch(image);
+    res.json(bestMatch);
+});
 
 // POST
 app.post('/register', async (req, res) => {
@@ -87,12 +97,4 @@ app.post('/register', async (req, res) => {
 app.get('/descriptors', async (req, res) => {
     const descriptors = await Descriptor.find();
     res.json(descriptors);
-});
-
-// GET Best Match 
-app.post('/detect', async (req, res) => {
-    const image = req.files.image.tempFilePath
-    console.log(image);
-    const bestMatch = await getDescriptorsAndReturnBestMatch(image);
-    res.json(bestMatch);
 });
