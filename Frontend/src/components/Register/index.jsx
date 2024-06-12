@@ -23,13 +23,6 @@ const Register = () => {
   }, []);
 
   const handleImageChange = async (event) => {
-    // Carga los modelos necesarios para el procesamiento de imágenes
-    // await Promise.all([
-    //   faceapi.nets.tinyFaceDetector.loadFromUri("/models"),
-    //   faceapi.nets.faceLandmark68Net.loadFromUri("/models"),
-    //   faceapi.nets.faceRecognitionNet.loadFromUri("/models"),
-    //   faceapi.nets.faceExpressionNet.loadFromUri("/models"),
-    // ]);
 
     // Continúa con el procesamiento de la imagen solo después de que todos los modelos estén cargados
     const img = event.target.files[0];
