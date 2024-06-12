@@ -2,7 +2,7 @@ const { json, urlencoded } = require('express');
 const express = require('express')
 const cors = require('cors')
 const mongoDB = require('./config/mongoConfig');
-const Descriptor = require('./models/descriptor.model');
+const Descriptor = require('./schemas/descriptor.model');
 const faceapi = require("face-api.js");
 const fileUpload = require("express-fileupload");
 const { Canvas, Image } = require("canvas");
@@ -29,8 +29,8 @@ app.listen(app.get('port'), async () => {
 app.use(json());
 app.use(urlencoded({ extended: false }));
 app.use(
-    fileUpload({useTempFiles: true})
-  );
+    fileUpload({ useTempFiles: true })
+);
 
 
 const loadModels = async () => {
@@ -54,7 +54,7 @@ const getDescriptorsAndReturnBestMatch = async (image) => {
         return new faceapi.LabeledFaceDescriptors(person.name, [descriptorsAsFloat32Arrays]);
     });
 
-    const faceMatcher = new faceapi.FaceMatcher(labeledDescriptors,0.6);
+    const faceMatcher = new faceapi.FaceMatcher(labeledDescriptors, 0.6);
     const img = canvas.loadImage(image);
     let temp = faceapi.createCanvasFromMedia(img);
 
@@ -67,7 +67,7 @@ const getDescriptorsAndReturnBestMatch = async (image) => {
     const results = resizedDetections.map(d => faceMatcher.findBestMatch(d.descriptor));
 
     return results;
-    
+
 }
 
 // POST
