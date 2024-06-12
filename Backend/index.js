@@ -56,7 +56,8 @@ const getDescriptorsAndReturnBestMatch = async (image) => {
     });
 
     const faceMatcher = new faceapi.FaceMatcher(labeledDescriptors, 0.6);
-    const img = canvas.loadImage(image);
+    const img = await canvas.loadImage(image);
+    
     let temp = faceapi.createCanvasFromMedia(img);
 
     const displaySize = { width: img.width, height: img.height };
@@ -91,6 +92,7 @@ app.get('/descriptors', async (req, res) => {
 // GET Best Match 
 app.post('/detect', async (req, res) => {
     const image = req.files.image.tempFilePath
+    console.log(image);
     const bestMatch = await getDescriptorsAndReturnBestMatch(image);
     res.json(bestMatch);
 });
