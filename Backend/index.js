@@ -1,3 +1,4 @@
+require('@tensorflow/tfjs-node')
 const { json, urlencoded } = require('express');
 const express = require('express')
 const cors = require('cors')
@@ -34,10 +35,10 @@ app.use(
 
 
 const loadModels = async () => {
-    await faceapi.nets.tinyFaceDetector.loadFromUri("/models");
-    await faceapi.nets.faceLandmark68Net.loadFromUri("/models");
-    await faceapi.nets.faceRecognitionNet.loadFromUri("/models");
-    await faceapi.nets.faceExpressionNet.loadFromUri("/models");
+    await faceapi.nets.tinyFaceDetector.loadFromDisk(__dirname + "/models");
+    await faceapi.nets.faceLandmark68Net.loadFromDisk(__dirname + "/models");
+    await faceapi.nets.faceRecognitionNet.loadFromDisk(__dirname + "/models");
+    await faceapi.nets.faceExpressionNet.loadFromDisk(__dirname + "/models");
 }
 
 loadModels();
