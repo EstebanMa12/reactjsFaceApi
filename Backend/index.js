@@ -1,4 +1,3 @@
-// const tf = require('@tensorflow/tfjs-node')
 const { json, urlencoded } = require('express');
 const express = require('express')
 const cors = require('cors')
@@ -53,7 +52,6 @@ const getDescriptorsAndReturnBestMatch = async (image) => {
         descriptorValues.forEach((value, i) => {
             descriptorsAsFloat32Arrays[i] = value;
         });
-
         return new faceapi.LabeledFaceDescriptors(person.name, [descriptorsAsFloat32Arrays]);
     });
 
@@ -64,20 +62,23 @@ const getDescriptorsAndReturnBestMatch = async (image) => {
 
     const displaySize = { width: img.width, height: img.height };
     faceapi.matchDimensions(temp, displaySize);
-
-    //Find Matching faces
-    const detections = await faceapi.detectAllFaces(img).withFaceLandmarks().withFaceDescriptors();
-    const resizedDetections = faceapi.resizeResults(detections, displaySize);
-    const results = resizedDetections.map(d => faceMatcher.findBestMatch(d.descriptor));
-
-    return results;
-
+    try {
+        const detections = await faceapi.detectAllFaces(img).withFaceLandmarks().withFaceDescriptors();
+        const resizedDetections = faceapi.resizeResults(detections, displaySize);
+        const results = resizedDetections.map(d => faceMatcher.findBestMatch(d.descriptor));
+        if(results.label!=='unknown'){
+            return results;
+        }else{
+            return 'No match found';
+        }
+    }catch (error) {
+        console.log(error);
+    }
 }
 
 // GET Best Match 
 app.post('/detect', async (req, res) => {
-    const image = req.files.image.tempFilePath
-    console.log(image);
+    const image = req.files.image.tempFilePath;
     const bestMatch = await getDescriptorsAndReturnBestMatch(image);
     res.json(bestMatch);
 });
