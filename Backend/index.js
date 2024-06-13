@@ -39,7 +39,7 @@ const loadModels = async () => {
     await faceapi.nets.faceLandmark68Net.loadFromDisk(__dirname + "/models");
     await faceapi.nets.faceRecognitionNet.loadFromDisk(__dirname + "/models");
     await faceapi.nets.faceExpressionNet.loadFromDisk(__dirname + "/models");
-    await faceapi.nets.ssdMobilenetv1.loadFromDisk(__dirname +'/models')
+    await faceapi.nets.ssdMobilenetv1.loadFromDisk(__dirname + '/models')
 }
 
 loadModels();
@@ -63,17 +63,25 @@ const getDescriptorsAndReturnBestMatch = async (image) => {
     const displaySize = { width: img.width, height: img.height };
     faceapi.matchDimensions(temp, displaySize);
     try {
-        const detections = await faceapi.detectAllFaces(img).withFaceLandmarks().withFaceDescriptors();
+        const detections = await faceapi.detectSingleFace(img).withFaceLandmarks().withFaceDescriptor();
         const resizedDetections = faceapi.resizeResults(detections, displaySize);
-        const results = resizedDetections.map(d => faceMatcher.findBestMatch(d.descriptor));
-        if(results.label!=='unknown'){
-            return results;
-        }else{
-            return 'No match found';
+        const results = faceMatcher.findBestMatch(resizedDetections.descriptor);
+        if (results.label === 'unknown') {
+            return {
+                message: 'No match found'
+            }
         }
-    }catch (error) {
-        console.log(error);
+        return {
+            message: 'Best match found',
+            data: results
+        }
     }
+    catch (error) {
+        return {
+            message: error.error
+        }
+    }
+
 }
 
 // GET Best Match 
